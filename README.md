@@ -1,38 +1,130 @@
-# Terraform - tf-cwl-retention-logs
+# Terraform Lambda and S3 Setup
 
-Terraform Sample to deploy an automation to apply retention logs in ALL CWL Log Groups based on a specific time.
+This repository contains code for deploying a Python AWS Lambda function and creating S3 bucket resources using Terraform. The resources are split into account-wide and environment-specific configurations, with the use of Terraform workspaces for state management.
 
-## Clone Repository
+## Repository Structure
 
-```
-git@ssh.gitlab.aws.dev:andrdal/tf-cwl-retention-logs.git
-```
+The repository is structured as follows:
 
-## Deploy
+account/ - for account-wide resources
 
-01 - Adjust **variables.tf** to define your log retention time, inside **log_retention_period** variable (Default 30 days), Ex:
-```
-cd tf-cwl-retention-logs/terraform
+env/ - for environment-specific resources (e.g., int, sit, stg).
 
-vi variables.tf
+## Terraform Workspaces
 
-#Change **default** value for your required retention time
+Terraform workspaces are used to manage different environments by creating isolated states for each environment.
 
-Save the file and exit
-```
+**Account-wide workspace**:
 
-02 - Deploy Terraform Code
-```
+- Fill in the required values such as access key and secret key.
+
+- Initialize Terraform in the `account/` directory:
+
+```bash
+cd account
 terraform init
+```
+
+**Environment-specific workspaces**:
+
+- Initialize Terraform in the `env/` directory:
+
+```bash
+cd env
+terraform init
+```
+
+- Create workspaces for each environment (e.g., `int`, `sit`, `stg`):
+
+```bash
+terraform workspace new int
+terraform workspace new sit
+terraform workspace new stg
+```
+
+### Switch Workspaces
+
+To switch between workspaces, use the following command:
+
+- For account-wide workspace:
+
+```bash
+cd account
+terraform workspace select np
+```
+
+- For environment-specific workspaces:
+
+```bash
+cd env
+terraform workspace select int
+terraform workspace select sit
+terraform workspace select stg
+```
+
+## Running Terraform for Account-wide Resources
+
+Navigate to the account/ directory:
+
+```bash
+cd account
+```
+
+Plan and apply the resources:
+
+```bash
 terraform plan
-terraform apply --auto-approve
+terraform apply
 ```
 
-## Validation
-Check inside Cloudwatch Service, if all Log Groups Retentions were modified.
+## Running Terraform for Environment-specific Resources
 
-## Cleanup
+Navigate to the env/ directory:
 
+```bash
+cd env
 ```
-terraform destroy --auto-approve
+
+Select the workspace for the desired environment:
+
+For integration (int):
+
+```bash
+terraform workspace select int
+```
+
+For system integration testing (sit):
+
+```bash
+terraform workspace select sit
+```
+
+For staging (stg):
+
+```bash
+terraform workspace select stg
+```
+
+Plan and apply the resources for the selected environment:
+
+```bash
+terraform plan
+terraform apply
+```
+
+## Switching Between Environments
+
+To switch between environments (e.g., from int to sit), follow these steps:
+
+Select the target workspace:
+
+```bash
+terraform workspace select sit
+```
+
+Plan and apply the changes for the new environment:
+
+```bash
+terraform plan
+terraform apply
 ```

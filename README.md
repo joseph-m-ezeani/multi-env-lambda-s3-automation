@@ -17,7 +17,6 @@ Terraform workspaces are used to manage different environments by creating isola
 **Account-wide workspace**:
 
 - Fill in the required values such as access key and secret key.
-
 - Initialize Terraform in the `account/` directory:
 
 ```bash

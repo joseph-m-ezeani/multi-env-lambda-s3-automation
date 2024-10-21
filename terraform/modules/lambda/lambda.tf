@@ -25,6 +25,7 @@ resource "aws_s3_bucket_notification" "bucket_notification" {
     events              = ["s3:ObjectCreated:*"] 
     filter_prefix       = "data/${var.env}/" # Trigger on object creation
   }
+  depends_on = [aws_lambda_function.object_read]
 }
 
 resource "aws_lambda_permission" "PermissionForEventsToInvokeLambda" {
@@ -37,7 +38,7 @@ resource "aws_lambda_permission" "PermissionForEventsToInvokeLambda" {
 
 # Lambda execution role
 resource "aws_iam_role" "lambda_execution_role" {
-  name = "cwl-retention-lambda-execution-role"
+  name = "cwl-retention-lambda-execution-role-${terraform.workspace}-${local.account_id}"
   path = "/"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -79,7 +80,7 @@ resource "aws_iam_role" "lambda_execution_role" {
 }
 
 resource "aws_iam_policy" "lambda_policy" {
-  name        = "lambda_s3_policy"
+  name        = "lambda-s3-policy-${terraform.workspace}-${local.account_id}"
   description = "Policy for Lambda to access S3"
   
   policy = jsonencode({
@@ -87,12 +88,11 @@ resource "aws_iam_policy" "lambda_policy" {
     Statement = [{
       Action   = [
         "s3:GetObject",
-        "s3:ListBucket"
+        "s3:*"
       ]
       Effect   = "Allow"
       Resource = [
-        var.bucket_arn,
-        "${var.bucket_arn}/*"
+         "*"
       ]
     }]
   })

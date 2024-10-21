@@ -1,13 +1,12 @@
 variable "bucket_name" {
-    type = string
-    default = ""
+  type    = string
+  default = ""
 }
 
-variable "indicated_workspace" {
-    type = string
-    default = "dev"
+variable "versioning_status" {
+  type = string
+  default = "Enabled"
 }
-
 
 variable "access_key" {
   type    = string

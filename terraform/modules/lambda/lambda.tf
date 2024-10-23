@@ -18,6 +18,7 @@ data "archive_file" "lambda" {
 
 
 resource "aws_s3_bucket_notification" "bucket_notification" {
+  count = terraform.workspace == "stg" ? 1 : 0
   bucket = var.bucket
 
   lambda_function {
